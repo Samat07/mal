@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ky">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2d6a4f">
+<title>МалЭсеп — Малчынын Жардамчысы</title>
+<link rel="manifest" href="manifest.json">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --g50:#e8f5e9;--g100:#c8e6c9;--g400:#66bb6a;--g600:#2d6a4f;--g700:#1b5e3b;--g800:#0d3d23;--g900:#052214;
+  --r50:#ffebee;--r400:#ef5350;--r600:#c62828;
+  --a50:#fff8e1;--a400:#ffca28;--a600:#f57f17;
+  --s50:#e1f5fe;--s600:#0277bd;
+  --bg:#f1f8f4;--card:#fff;--text:#1a2e1f;--sub:#4a6352;--muted:#7a9b84;
+  --border:rgba(45,106,79,0.15);--border2:rgba(45,106,79,0.3);
+  --sh:0 1px 4px rgba(0,0,0,0.08);--sh2:0 4px 16px rgba(0,0,0,0.1);
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes scaleIn{from{transform:scale(0.92);opacity:0}to{transform:scale(1);opacity:1}}
+.ani{animation:fadeIn .3s ease both}
+
+/* AUTH */
+#auth-screen{min-height:100vh;background:linear-gradient(135deg,#052214,#1b5e3b 60%,#2d6a4f);display:flex;align-items:center;justify-content:center;padding:1.5rem;position:relative;overflow:hidden;}
+.ab{position:absolute;border-radius:50%;background:rgba(255,255,255,0.05);animation:float 6s ease-in-out infinite;}
+.ab:nth-child(1){width:300px;height:300px;top:-80px;left:-80px;}
+.ab:nth-child(2){width:200px;height:200px;bottom:-40px;right:-40px;animation-delay:2s;}
+.ab:nth-child(3){width:120px;height:120px;top:40%;left:75%;animation-delay:4s;}
+.auth-card{background:rgba(255,255,255,0.97);border-radius:20px;padding:2.25rem;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;z-index:1;animation:scaleIn .4s ease;}
+.auth-logo{text-align:center;margin-bottom:1.75rem;}
+.auth-logo .ico{font-size:3.5rem;display:block;animation:float 3s ease-in-out infinite;}
+.auth-logo h1{font-size:1.75rem;font-weight:700;color:var(--g700);}
+.auth-logo p{font-size:.85rem;color:var(--sub);margin-top:3px;}
+.tabs{display:flex;background:var(--bg);border-radius:var(--r);padding:4px;margin-bottom:1.25rem;}
+.tab{flex:1;padding:.5rem;border:none;background:none;border-radius:7px;font-size:.875rem;font-weight:500;cursor:pointer;transition:all .2s;color:var(--sub);}
+.tab.active{background:var(--g600);color:#fff;}
+.fg{margin-bottom:.875rem;}
+.lbl{display:block;font-size:.8rem;font-weight:500;color:var(--sub);margin-bottom:.3rem;}
+.inp{width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:var(--r);font-size:.9375rem;font-family:inherit;background:#fff;outline:none;color:var(--text);transition:border-color .2s,box-shadow .2s;}
+.inp:focus{border-color:var(--g600);box-shadow:0 0 0 3px rgba(45,106,79,.12);}
+textarea.inp{resize:vertical;}
+.btn-p{width:100%;padding:.85rem;background:var(--g600);color:#fff;border:none;border-radius:var(--r);font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;margin-top:.25rem;}
+.btn-p:hover{background:var(--g700);}
+.auth-err{background:var(--r50);color:var(--r600);border:1px solid rgba(198,40,40,.2);border-radius:var(--r);padding:.65rem .9rem;font-size:.85rem;margin-top:.6rem;display:none;}
+
+/* APP SHELL */
+#main-app{display:none;min-height:100vh;}
+.topnav{height:60px;background:var(--g700);display:flex;align-items:center;padding:0 1rem;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.logo{font-size:1.2rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.85rem;}
+.uname{color:rgba(255,255,255,.85);font-size:.85rem;}
+.btn-out{background:rgba(255,255,255,.15);color:#fff;border:none;padding:.35rem .8rem;border-radius:20px;font-size:.8rem;cursor:pointer;}
+.btn-out:hover{background:rgba(255,255,255,.25);}
+.off-badge{background:var(--a50);color:var(--a600);border:1px solid rgba(245,127,23,.3);border-radius:20px;padding:3px 10px;font-size:.75rem;font-weight:500;display:none;}
+.bnav{position:fixed;bottom:0;left:0;right:0;height:64px;background:#fff;border-top:1.5px solid var(--border);display:flex;z-index:100;box-shadow:0 -4px 12px rgba(0,0,0,.07);}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border:none;background:none;color:var(--muted);font-size:.675rem;font-weight:500;transition:color .2s;}
+.ni .nic{font-size:1.3rem;transition:transform .2s;}
+.ni.active{color:var(--g600);}
+.ni.active .nic{transform:scale(1.15);}
+.content{padding:1.1rem;padding-bottom:calc(64px + 1rem);max-width:720px;margin:0 auto;}
+.page{display:none;}
+.page.active{display:block;animation:fadeIn .3s ease;}
+
+/* DASHBOARD */
+.hero{background:linear-gradient(135deg,var(--g700),var(--g600));border-radius:16px;padding:1.35rem;color:#fff;margin-bottom:1.1rem;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;right:-15px;bottom:-15px;font-size:6rem;opacity:.12;pointer-events:none;animation:float 4s ease-in-out infinite;}
+.hero-greet{font-size:.85rem;opacity:.8;margin-bottom:2px;}
+.hero-name{font-size:1.4rem;font-weight:700;margin-bottom:.5rem;}
+.hero-date{font-size:.8rem;opacity:.7;}
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:.8rem;margin-bottom:1.1rem;}
+.sc{background:#fff;border-radius:13px;padding:1rem;border:1.5px solid var(--border);cursor:pointer;transition:transform .2s,box-shadow .2s;}
+.sc:hover{transform:translateY(-2px);box-shadow:var(--sh2);}
+.sc-ico{font-size:1.6rem;margin-bottom:.4rem;}
+.sc-lbl{font-size:.72rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.5px;}
+.sc-num{font-size:1.75rem;font-weight:700;line-height:1.1;}
+.sc-sub{font-size:.72rem;color:var(--sub);margin-top:2px;}
+.sc.sheep{border-top:3px solid #81c784;}
+.sc.cow{border-top:3px solid #a1887f;}
+.sc.horse{border-top:3px solid #90a4ae;}
+.sc.total{border-top:3px solid #ffca28;}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;}
+.sec-ttl{font-size:.95rem;font-weight:600;}
+
+/* TYPE PAGES */
+.type-hdr{display:flex;align-items:center;gap:.85rem;margin-bottom:1.1rem;}
+.type-ico{font-size:2.25rem;}
+.type-ttl{font-size:1.3rem;font-weight:700;}
+.type-sub{font-size:.85rem;color:var(--sub);}
+.btn-add{width:100%;padding:.8rem;background:var(--g50);color:var(--g700);border:2px dashed var(--g400);border-radius:var(--r);font-size:.9375rem;font-weight:600;cursor:pointer;transition:all .2s;margin-bottom:1.1rem;display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.btn-add:hover{background:var(--g100);}
+
+/* PERSON CARD */
+.pc{background:#fff;border-radius:13px;border:1.5px solid var(--border);margin-bottom:.8rem;overflow:hidden;transition:box-shadow .2s;}
+.pc:hover{box-shadow:var(--sh2);}
+.pc-hdr{display:flex;align-items:center;padding:.9rem 1rem;cursor:pointer;gap:.8rem;user-select:none;}
+.pc-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-shrink:0;}
+.pc-info{flex:1;min-width:0;}
+.pc-name{font-weight:600;font-size:.9375rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pc-meta{font-size:.8rem;color:var(--sub);margin-top:2px;}
+.pc-acts{display:flex;gap:5px;}
+.ib{width:30px;height:30px;border-radius:7px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95rem;transition:filter .2s;}
+.ib:hover{filter:brightness(.88);}
+.ib.e{background:var(--s50);color:var(--s600);}
+.ib.d{background:var(--r50);color:var(--r600);}
+.pc-body{display:none;border-top:1px solid var(--border);padding:.75rem 1rem .9rem;animation:fadeIn .2s ease;}
+.pc-body.open{display:block;}
+
+/* STATS */
+.asgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:.55rem;margin-bottom:.65rem;}
+.as{background:var(--bg);border-radius:var(--r);padding:.65rem;text-align:center;}
+.as-lbl{font-size:.7rem;color:var(--muted);margin-bottom:2px;}
+.as-val{font-size:1.25rem;font-weight:700;}
+.total-pill{background:var(--g600);color:#fff;border-radius:25px;padding:.45rem 1rem;font-size:.875rem;font-weight:600;text-align:center;margin-bottom:.65rem;}
+.tbox{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--g50),#e0f2e9);border:1.5px solid var(--g400);border-radius:var(--r);padding:.65rem .9rem;margin:.5rem 0;}
+.tbox-lbl{font-size:.875rem;color:var(--g700);font-weight:500;}
+.tbox-val{font-size:1.2rem;font-weight:700;color:var(--g700);}
+.tbox.red{background:var(--r50);border-color:var(--r400);}
+.tbox.red .tbox-lbl,.tbox.red .tbox-val{color:var(--r600);}
+
+/* PHOTO GRID */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem;margin:.5rem 0;}
+.pitem{aspect-ratio:1;border-radius:var(--r);overflow:hidden;background:var(--bg);border:1.5px solid var(--border);position:relative;cursor:pointer;}
+.pitem img{width:100%;height:100%;object-fit:cover;display:block;}
+.padd{aspect-ratio:1;border-radius:var(--r);border:2px dashed var(--border2);background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:.65rem;color:var(--muted);transition:border-color .2s,color .2s;}
+.padd:hover{border-color:var(--g400);color:var(--g600);}
+.padd .pie{font-size:1.4rem;}
+.pdel{position:absolute;top:3px;right:3px;width:20px;height:20px;background:rgba(0,0,0,.55);border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.7rem;opacity:0;transition:opacity .2s;}
+.pitem:hover .pdel{opacity:1;}
+
+/* LOG ITEMS */
+.log-item{display:flex;align-items:flex-start;gap:.6rem;padding:.6rem;background:var(--r50);border-radius:var(--r);border:1px solid rgba(198,40,40,.15);margin-top:.4rem;font-size:.8rem;}
+.log-ico{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.log-info{flex:1;}
+.log-what{font-weight:600;color:var(--r600);}
+.log-when{color:var(--muted);font-size:.72rem;}
+.log-img{width:46px;height:46px;border-radius:7px;object-fit:cover;flex-shrink:0;border:1px solid rgba(198,40,40,.2);cursor:pointer;}
+
+/* SELL BTN */
+.btn-sell{width:100%;padding:.7rem;background:var(--a50);color:#7a4800;border:1.5px solid var(--a400);border-radius:var(--r);font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:.45rem;margin-top:.65rem;}
+.btn-sell:hover{background:var(--a400);color:#3d2400;}
+
+/* COW ANKETA */
+.ca{background:#fff;border-radius:13px;border:1.5px solid var(--border);overflow:hidden;margin-bottom:.6rem;}
+.ca-hdr{display:flex;align-items:center;gap:.75rem;padding:.8rem 1rem;cursor:pointer;background:linear-gradient(135deg,var(--g50),#fff);}
+.ca-num{width:32px;height:32px;border-radius:50%;background:var(--g600);color:#fff;font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ca-name{font-weight:600;font-size:.9375rem;flex:1;}
+.ca-dot{width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;}
+.ca-body{display:none;padding:.75rem 1rem .9rem;border-top:1px solid var(--border);}
+.ca-body.open{display:block;animation:fadeIn .2s ease;}
+.ca-sec-ttl{font-size:.75rem;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin:.7rem 0 .4rem;}
+.ca-field{font-size:.85rem;color:var(--text);margin-bottom:3px;}
+.ca-field strong{color:var(--g700);}
+.photo-row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+.ca-pbox{border-radius:var(--r);overflow:hidden;border:1.5px solid var(--border);background:var(--bg);aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;}
+.ca-pbox img{width:100%;height:100%;object-fit:cover;}
+.ca-pbox-add{border-radius:var(--r);border:2px dashed var(--border2);background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:.7rem;color:var(--muted);aspect-ratio:1;transition:border-color .2s,color .2s;}
+.ca-pbox-add:hover{border-color:var(--g400);color:var(--g600);}
+.ca-edit-btn{display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.6rem;background:var(--s50);color:var(--s600);border:none;border-radius:var(--r);font-size:.85rem;font-weight:500;cursor:pointer;width:100%;margin-top:.6rem;}
+.ca-del-btn{display:flex;align-items:center;justify-content:center;gap:.4rem;padding:.55rem;background:var(--r50);color:var(--r600);border:none;border-radius:var(--r);font-size:.85rem;font-weight:500;cursor:pointer;width:100%;margin-top:.4rem;}
+.btn-add-cow{width:100%;padding:.7rem;background:var(--s50);color:var(--s600);border:1.5px dashed #64b5f6;border-radius:var(--r);font-size:.9rem;font-weight:600;cursor:pointer;margin-top:.75rem;display:flex;align-items:center;justify-content:center;gap:.45rem;}
+.btn-add-cow:hover{background:#e3f2fd;}
+
+/* SELL IMG */
+.nip-row{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;margin-top:.4rem;}
+.nip{width:60px;height:60px;border-radius:var(--r);object-fit:cover;border:1.5px solid var(--border);cursor:pointer;}
+.nip-add{width:60px;height:60px;border-radius:var(--r);border:2px dashed var(--border2);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--muted);}
+.nip-add:hover{border-color:var(--g400);color:var(--g600);}
+
+/* COLOR PICKER */
+.color-opts{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.4rem;}
+.col-opt{width:30px;height:30px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s,border-color .15s;position:relative;}
+.col-opt:hover{transform:scale(1.15);}
+.col-opt.sel{border-color:var(--g600);}
+.col-opt.sel::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#fff;font-weight:700;text-shadow:0 0 2px rgba(0,0,0,.5);}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.mo.open{opacity:1;pointer-events:all;}
+.ms{background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:620px;max-height:92vh;overflow-y:auto;padding:1.35rem;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1);}
+.mo.open .ms{transform:translateY(0);}
+.mhandle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 1.1rem;}
+.mttl{font-size:1.1rem;font-weight:700;margin-bottom:1.1rem;}
+.mftr{display:flex;gap:.65rem;margin-top:1.1rem;}
+.btn-cancel{flex:1;padding:.7rem;background:var(--bg);color:var(--sub);border:1.5px solid var(--border);border-radius:var(--r);font-size:.9375rem;font-weight:500;cursor:pointer;}
+.btn-save{flex:2;padding:.7rem;background:var(--g600);color:#fff;border:none;border-radius:var(--r);font-size:.9375rem;font-weight:600;cursor:pointer;}
+.btn-save:hover{background:var(--g700);}
+
+/* PHOTO SOURCE */
+.ps-opts{display:flex;gap:.75rem;}
+.ps-btn{flex:1;padding:1.1rem .65rem;background:var(--bg);border:1.5px solid var(--border);border-radius:13px;cursor:pointer;text-align:center;font-size:.875rem;font-weight:500;color:var(--text);}
+.ps-btn:hover{border-color:var(--g400);background:var(--g50);}
+.ps-ico{font-size:1.85rem;display:block;margin-bottom:.4rem;}
+
+/* CONFIRM */
+.co{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:250;display:flex;align-items:center;justify-content:center;padding:1.5rem;opacity:0;pointer-events:none;transition:opacity .2s;}
+.co.open{opacity:1;pointer-events:all;}
+.cc{background:#fff;border-radius:16px;padding:1.4rem;max-width:300px;width:100%;transform:scale(.9);transition:transform .2s;text-align:center;}
+.co.open .cc{transform:scale(1);}
+.cc-ico{font-size:2.25rem;margin-bottom:.6rem;}
+.cc-ttl{font-size:1rem;font-weight:700;margin-bottom:.4rem;}
+.cc-txt{font-size:.875rem;color:var(--sub);margin-bottom:1.1rem;}
+.cc-acts{display:flex;gap:.65rem;}
+.btn-cd{flex:1;padding:.7rem;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--r);font-size:.9rem;cursor:pointer;}
+.btn-cy{flex:1;padding:.7rem;background:var(--r600);color:#fff;border:none;border-radius:var(--r);font-size:.9rem;font-weight:600;cursor:pointer;}
+
+/* TOAST */
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(16px);background:#1a2e1f;color:#fff;padding:.65rem 1.1rem;border-radius:24px;font-size:.875rem;font-weight:500;z-index:300;opacity:0;transition:all .3s;white-space:nowrap;box-shadow:var(--sh2);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* INFO ROW */
+.ir{display:flex;align-items:center;gap:.65rem;padding:.8rem;background:#fff;border-radius:var(--r);border:1.5px solid var(--border);margin-bottom:.45rem;}
+.ir-ico{font-size:1.15rem;}
+.ir-lbl{font-size:.78rem;color:var(--muted);}
+.ir-val{font-size:.9rem;font-weight:500;margin-top:1px;}
+.empty{text-align:center;padding:2.5rem 1.25rem;color:var(--muted);}
+.empty .ei{font-size:2.75rem;display:block;opacity:.45;margin-bottom:.65rem;}
+.prof-card{background:#fff;border-radius:16px;padding:1.35rem;border:1.5px solid var(--border);margin-bottom:.9rem;text-align:center;}
+.prof-av{width:72px;height:72px;border-radius:50%;background:var(--g600);color:#fff;font-size:1.85rem;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto .85rem;}
+.prof-name{font-size:1.2rem;font-weight:700;}
+.prof-ph{font-size:.85rem;color:var(--sub);margin-top:3px;}
+#phi{display:none;}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="ab"></div><div class="ab"></div><div class="ab"></div>
+  <div class="auth-card">
+    <div class="auth-logo">
+      <span class="ico">🐑</span>
+      <h1>МалЭсеп</h1>
+      <p>Малчынын санарип жардамчысы</p>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="authTab('login')">Кирүү</button>
+      <button class="tab" onclick="authTab('reg')">Катталуу</button>
+    </div>
+    <div id="login-f">
+      <div class="fg"><label class="lbl">Логин</label><input class="inp" id="l-u" placeholder="aibek123" autocomplete="username"></div>
+      <div class="fg"><label class="lbl">Пароль</label><input class="inp" type="password" id="l-p" placeholder="Паролуңуз" autocomplete="current-password"></div>
+      <button class="btn-p" onclick="doLogin()">✓ Кирүү</button>
+      <div class="auth-err" id="l-err"></div>
+    </div>
+    <div id="reg-f" style="display:none">
+      <div class="fg"><label class="lbl">Толук аты-жөнү</label><input class="inp" id="r-n" placeholder="Айбек Токтосунов"></div>
+      <div class="fg"><label class="lbl">Логин</label><input class="inp" id="r-u" placeholder="aibek123" autocomplete="username"></div>
+      <div class="fg"><label class="lbl">Телефон</label><input class="inp" type="tel" id="r-ph" placeholder="+996 7XX XXX XXX"></div>
+      <div class="fg"><label class="lbl">Пароль</label><input class="inp" type="password" id="r-p" placeholder="Пароль" autocomplete="new-password"></div>
+      <button class="btn-p" onclick="doReg()">✓ Катталуу</button>
+      <div class="auth-err" id="r-err"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="main-app">
+  <nav class="topnav">
+    <div class="logo"><span>🐑</span> МалЭсеп</div>
+    <div class="nav-right">
+      <span class="off-badge" id="off-b">📵 Офлайн</span>
+      <div class="avatar" id="nav-av">А</div>
+      <span class="uname" id="nav-un"></span>
+      <button class="btn-out" onclick="doLogout()">Чыгуу</button>
+    </div>
+  </nav>
+  <div class="content">
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div class="hero ani">
+        <div class="hero-greet" id="h-greet">Кайрылуу</div>
+        <div class="hero-name" id="h-name">Малчы</div>
+        <div class="hero-date" id="h-date"></div>
+        <div class="hero-bg">🏔️</div>
+      </div>
+      <div class="sgrid ani">
+        <div class="sc sheep" onclick="goPage('sheep')"><div class="sc-ico">🐑</div><div class="sc-lbl">Кой / Эчки</div><div class="sc-num" id="ds-sheep">0</div><div class="sc-sub">адамда бар</div></div>
+        <div class="sc cow" onclick="goPage('cow')"><div class="sc-ico">🐄</div><div class="sc-lbl">Уй</div><div class="sc-num" id="ds-cow">0</div><div class="sc-sub">адамда бар</div></div>
+        <div class="sc horse" onclick="goPage('horse')"><div class="sc-ico">🐎</div><div class="sc-lbl">Жылкы</div><div class="sc-num" id="ds-horse">0</div><div class="sc-sub">адамда бар</div></div>
+        <div class="sc total" onclick="goPage('home')"><div class="sc-ico">📊</div><div class="sc-lbl">Жалпы баш</div><div class="sc-num" id="ds-total">0</div><div class="sc-sub">бардык жандык</div></div>
+      </div>
+      <div class="sec-hdr"><div class="sec-ttl">📋 Акыркы кирүүлөр</div></div>
+      <div id="recent-list"></div>
+    </div>
+    <!-- SHEEP -->
+    <div class="page" id="page-sheep">
+      <div class="type-hdr ani"><span class="type-ico">🐑</span><div><div class="type-ttl">Кой / Эчки</div><div class="type-sub" id="sheep-sub">0 адам</div></div></div>
+      <button class="btn-add" onclick="openAddPerson('sheep')">＋ Жаңы адам кошуу</button>
+      <div id="sheep-list"></div>
+    </div>
+    <!-- COW -->
+    <div class="page" id="page-cow">
+      <div class="type-hdr ani"><span class="type-ico">🐄</span><div><div class="type-ttl">Уй</div><div class="type-sub" id="cow-sub">0 адам</div></div></div>
+      <button class="btn-add" onclick="openAddPerson('cow')">＋ Жаңы адам кошуу</button>
+      <div id="cow-list"></div>
+    </div>
+    <!-- HORSE -->
+    <div class="page" id="page-horse">
+      <div class="type-hdr ani"><span class="type-ico">🐎</span><div><div class="type-ttl">Жылкы</div><div class="type-sub" id="horse-sub">0 адам</div></div></div>
+      <button class="btn-add" onclick="openAddPerson('horse')">＋ Жаңы адам кошуу</button>
+      <div id="horse-list"></div>
+    </div>
+    <!-- PROFILE -->
+    <div class="page" id="page-profile"><div id="prof-content"></div></div>
+  </div>
+  <nav class="bnav">
+    <button class="ni active" id="ni-home" onclick="goPage('home')"><span class="nic">🏠</span><span>Башкы</span></button>
+    <button class="ni" id="ni-sheep" onclick="goPage('sheep')"><span class="nic">🐑</span><span>Кой</span></button>
+    <button class="ni" id="ni-cow" onclick="goPage('cow')"><span class="nic">🐄</span><span>Уй</span></button>
+    <button class="ni" id="ni-horse" onclick="goPage('horse')"><span class="nic">🐎</span><span>Жылкы</span></button>
+    <button class="ni" id="ni-profile" onclick="goPage('profile')"><span class="nic">👤</span><span>Профиль</span></button>
+  </nav>
+</div>
+
+<!-- MODAL: SHEEP / HORSE PERSON -->
+<div class="mo" id="mo-person">
+  <div class="ms">
+    <div class="mhandle"></div>
+    <div class="mttl" id="mo-person-ttl">Адам кошуу</div>
+    <div class="fg"><label class="lbl">Аты-жөнү *</label><input class="inp" id="mp-name" placeholder="Толук ат"></div>
+    <div class="fg"><label class="lbl">Телефон</label><input class="inp" type="tel" id="mp-phone" placeholder="+996 7XX XXX XXX"></div>
+    <div id="mpf-sheep">
+      <div class="fg" style="margin-top:.4rem;">
+        <label class="lbl">📸 Адамдын малынын суроттору</label>
+        <div class="pgrid" id="sheep-pgrid"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-top:.25rem;">
+        <div class="fg"><label class="lbl">🐑 Кой</label><input class="inp" type="number" id="mp-sheep" value="0" min="0" oninput="calcSheepT()"></div>
+        <div class="fg"><label class="lbl">🐣 Козу</label><input class="inp" type="number" id="mp-lamb" value="0" min="0" oninput="calcSheepT()"></div>
+        <div class="fg"><label class="lbl">🐐 Эчки</label><input class="inp" type="number" id="mp-goat" value="0" min="0" oninput="calcSheepT()"></div>
+        <div class="fg"><label class="lbl">🐏 Улак</label><input class="inp" type="number" id="mp-kid" value="0" min="0" oninput="calcSheepT()"></div>
+      </div>
+      <div class="tbox"><span class="tbox-lbl">📊 Жалпы (кой+козу+эчки+улак):</span><span class="tbox-val" id="sheep-total-lbl">0 баш</span></div>
+    </div>
+    <div id="mpf-horse" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-top:.5rem;">
+        <div class="fg"><label class="lbl">🐎 Жылкы</label><input class="inp" type="number" id="mp-horse" value="0" min="0" oninput="calcHorseT()"></div>
+        <div class="fg"><label class="lbl">🐴 Кулун</label><input class="inp" type="number" id="mp-foal" value="0" min="0" oninput="calcHorseT()"></div>
+      </div>
+      <div class="tbox"><span class="tbox-lbl">📊 Жалпы (жылкы+кулун):</span><span class="tbox-val" id="horse-total-lbl">0 баш</span></div>
+    </div>
+    <div class="fg" style="margin-top:.5rem;"><label class="lbl">📝 Эскертме</label><textarea class="inp" id="mp-note" rows="2" placeholder="Кошумча..."></textarea></div>
+    <div class="mftr">
+      <button class="btn-cancel" onclick="closeMo('mo-person')">Жок</button>
+      <button class="btn-save" onclick="savePerson()">💾 Сактоо</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: COW PERSON -->
+<div class="mo" id="mo-cperson">
+  <div class="ms">
+    <div class="mhandle"></div>
+    <div class="mttl" id="mo-cperson-ttl">Адам кошуу (Уй)</div>
+    <div class="fg"><label class="lbl">Аты-жөнү *</label><input class="inp" id="mcp-name" placeholder="Толук ат"></div>
+    <div class="fg"><label class="lbl">Телефон</label><input class="inp" type="tel" id="mcp-phone" placeholder="+996 7XX XXX XXX"></div>
+    <div class="fg"><label class="lbl">📝 Эскертме</label><textarea class="inp" id="mcp-note" rows="2" placeholder="..."></textarea></div>
+    <div class="mftr">
+      <button class="btn-cancel" onclick="closeMo('mo-cperson')">Жок</button>
+      <button class="btn-save" onclick="saveCowPerson()">💾 Сактоо</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: COW ANKETA -->
+<div class="mo" id="mo-cow">
+  <div class="ms">
+    <div class="mhandle"></div>
+    <div class="mttl" id="mo-cow-ttl">🐄 Уй анкетасы</div>
+    <div class="fg"><label class="lbl">Уйдун аты / # *</label><input class="inp" id="mc-name" placeholder="мис: Алапай же №1"></div>
+    <div class="fg">
+      <label class="lbl">🎨 Уйдун түсү</label>
+      <input class="inp" id="mc-color" placeholder="мис: Ала, Кара-ала, Кызыл..." oninput="syncColor()">
+      <div class="color-opts" id="color-opts"></div>
+    </div>
+    <div class="fg"><label class="lbl">🏷 Кулак биркасынын номери</label><input class="inp" id="mc-tag" placeholder="мис: KG-2024-001"></div>
+    <div class="fg"><label class="lbl">📝 Эскертме</label><textarea class="inp" id="mc-note" rows="2" placeholder="..."></textarea></div>
+    <div class="fg">
+      <label class="lbl">📸 Уйдун суроту (жалпы)</label>
+      <div class="photo-row" id="cow-main-grid"></div>
+    </div>
+    <div class="fg">
+      <label class="lbl">👂 Кулак эндинин суроту</label>
+      <div class="photo-row" id="cow-ear-grid"></div>
+    </div>
+    <div class="fg">
+      <label class="lbl">🔥 Тамганын суроту</label>
+      <div class="photo-row" id="cow-brand-grid"></div>
+    </div>
+    <div class="mftr">
+      <button class="btn-cancel" onclick="closeMo('mo-cow')">Жок</button>
+      <button class="btn-save" onclick="saveCowAnketa()">💾 Сактоо</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SELL / TAKEN -->
+<div class="mo" id="mo-sell">
+  <div class="ms">
+    <div class="mhandle"></div>
+    <div class="mttl" id="mo-sell-ttl">🤝 Алып кетти / Сойду</div>
+    <div id="sell-sheep-sec">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
+        <div class="fg"><label class="lbl">🐑 Кой</label><input class="inp" type="number" id="sl-sheep" value="0" min="0" oninput="calcSellT()"></div>
+        <div class="fg"><label class="lbl">🐣 Козу</label><input class="inp" type="number" id="sl-lamb" value="0" min="0" oninput="calcSellT()"></div>
+        <div class="fg"><label class="lbl">🐐 Эчки</label><input class="inp" type="number" id="sl-goat" value="0" min="0" oninput="calcSellT()"></div>
+        <div class="fg"><label class="lbl">🐏 Улак</label><input class="inp" type="number" id="sl-kid" value="0" min="0" oninput="calcSellT()"></div>
+      </div>
+    </div>
+    <div id="sell-horse-sec" style="display:none">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
+        <div class="fg"><label class="lbl">🐎 Жылкы</label><input class="inp" type="number" id="sl-horse" value="0" min="0" oninput="calcSellT()"></div>
+        <div class="fg"><label class="lbl">🐴 Кулун</label><input class="inp" type="number" id="sl-foal" value="0" min="0" oninput="calcSellT()"></div>
+      </div>
+    </div>
+    <div class="tbox red" style="margin:.4rem 0;">
+      <span class="tbox-lbl">➖ Жалпыдан кемийт:</span>
+      <span class="tbox-val" id="sell-total-lbl">0 баш</span>
+    </div>
+    <div class="fg"><label class="lbl">📋 Эскертме (ким алды / сойду)</label><input class="inp" id="sl-note" placeholder="мис: Нурланга саттым"></div>
+    <div class="fg">
+      <label class="lbl">📸 Сурот (сатып алганды, союуну ж.б.)</label>
+      <div class="nip-row" id="sell-imgs">
+        <button class="nip-add" onclick="openPhiForSell()">📷</button>
+      </div>
+    </div>
+    <div class="mftr">
+      <button class="btn-cancel" onclick="closeMo('mo-sell')">Жок</button>
+      <button class="btn-save" style="background:#c62828;" onclick="doSell()">✅ Ырастоо</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: PHOTO SOURCE -->
+<div class="mo" id="mo-phi">
+  <div class="ms" style="padding-bottom:1.75rem;">
+    <div class="mhandle"></div>
+    <div class="mttl">Сурот кошуу</div>
+    <div class="ps-opts">
+      <button class="ps-btn" onclick="phiTrig('cam')"><span class="ps-ico">📸</span>Камера</button>
+      <button class="ps-btn" onclick="phiTrig('gal')"><span class="ps-ico">🖼️</span>Галерея</button>
+    </div>
+    <button class="btn-cancel" style="width:100%;margin-top:.9rem;" onclick="closeMo('mo-phi')">Артка</button>
+  </div>
+</div>
+
+<!-- MODAL: IMAGE VIEWER -->
+<div class="mo" id="mo-img">
+  <div class="ms" style="background:#111;border-radius:20px 20px 0 0;padding:1rem;">
+    <div style="text-align:center;margin-bottom:.75rem;">
+      <button style="background:rgba(255,255,255,.15);color:#fff;border:none;padding:.4rem .9rem;border-radius:20px;cursor:pointer;" onclick="closeMo('mo-img')">✕ Жабуу</button>
+    </div>
+    <img id="img-view" style="width:100%;max-height:70vh;object-fit:contain;border-radius:var(--r);">
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="co" id="co">
+  <div class="cc">
+    <div class="cc-ico">🗑️</div>
+    <div class="cc-ttl">Өчүрүлсүнбү?</div>
+    <div class="cc-txt" id="co-txt">Маалымат биротоло жок болот.</div>
+    <div class="cc-acts">
+      <button class="btn-cd" onclick="closeCo()">Жок</button>
+      <button class="btn-cy" onclick="doCo()">Өчүрүү</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<input type="file" id="phi" accept="image/*" onchange="phiSelected(event)">
+
+<script>
+// ─── DATA ───────────────────────────────────────────────
+let CU=null;
+function gk(k){return CU?`m_${CU.username}_${k}`:k;}
+function sd(k,v){try{localStorage.setItem(gk(k),JSON.stringify(v));}catch(e){}}
+function ld(k,d=[]){try{const v=localStorage.getItem(gk(k));return v?JSON.parse(v):d;}catch(e){return d;}}
+function getUsers(){try{return JSON.parse(localStorage.getItem('mu_users')||'[]');}catch(e){return[];}}
+function saveUsers(u){localStorage.setItem('mu_users',JSON.stringify(u));}
+
+// ─── AUTH ────────────────────────────────────────────────
+function authTab(t){
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='reg')));
+  document.getElementById('login-f').style.display=t==='login'?'block':'none';
+  document.getElementById('reg-f').style.display=t==='reg'?'block':'none';
+}
+function showErr(id,m){const e=document.getElementById(id);e.textContent='⚠ '+m;e.style.display='block';}
+function doLogin(){
+  const u=document.getElementById('l-u').value.trim(),p=document.getElementById('l-p').value;
+  document.getElementById('l-err').style.display='none';
+  if(!u||!p){showErr('l-err','Логин жана пароль киргизиңиз');return;}
+  const user=getUsers().find(x=>x.username===u&&x.password===btoa(p));
+  if(!user){showErr('l-err','Логин же пароль туура эмес');return;}
+  CU=user;localStorage.setItem('mu_sess',JSON.stringify(user));startApp();
+}
+function doReg(){
+  const n=document.getElementById('r-n').value.trim(),u=document.getElementById('r-u').value.trim(),ph=document.getElementById('r-ph').value.trim(),p=document.getElementById('r-p').value;
+  document.getElementById('r-err').style.display='none';
+  if(!n||!u||!p){showErr('r-err','Бардык талааларды толтуруңуз');return;}
+  if(u.length<3){showErr('r-err','Логин кеминде 3 символ');return;}
+  if(p.length<4){showErr('r-err','Пароль кеминде 4 символ');return;}
+  const users=getUsers();
+  if(users.find(x=>x.username===u)){showErr('r-err','Бул логин бар, башкасын тандаңыз');return;}
+  const usr={id:Date.now(),name:n,username:u,phone:ph,password:btoa(p),created:new Date().toISOString()};
+  users.push(usr);saveUsers(users);
+  CU=usr;localStorage.setItem('mu_sess',JSON.stringify(usr));startApp();
+}
+function doLogout(){CU=null;localStorage.removeItem('mu_sess');document.getElementById('main-app').style.display='none';document.getElementById('auth-screen').style.display='flex';}
+function checkSess(){try{const s=localStorage.getItem('mu_sess');if(!s)return false;const u=JSON.parse(s);const f=getUsers().find(x=>x.username===u.username);if(f){CU=f;return true;}}catch(e){}return false;}
+
+// ─── APP START ───────────────────────────────────────────
+function startApp(){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('main-app').style.display='block';
+  document.getElementById('nav-av').textContent=CU.name[0].toUpperCase();
+  document.getElementById('nav-un').textContent=CU.name.split(' ')[0];
+  const hr=new Date().getHours();
+  document.getElementById('h-greet').textContent=hr<12?'Кайырлуу таң,':hr<17?'Кайырлуу күн,':'Кайырлуу кеч,';
+  document.getElementById('h-name').textContent=CU.name;
+  const D=['Жекшемби','Дүйшөмбү','Шейшемби','Шаршемби','Бейшемби','Жума','Ишемби'];
+  const M=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  const now=new Date();
+  document.getElementById('h-date').textContent=`${D[now.getDay()]}, ${now.getDate()} ${M[now.getMonth()]} ${now.getFullYear()}`;
+  const upd=()=>document.getElementById('off-b').style.display=navigator.onLine?'none':'flex';
+  window.addEventListener('online',upd);window.addEventListener('offline',upd);upd();
+  initColors();refreshDash();goPage('home');
+}
+
+// ─── NAV ─────────────────────────────────────────────────
+function goPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  const ni=document.getElementById('ni-'+p);if(ni)ni.classList.add('active');
+  if(p==='sheep')renderList('sheep');
+  else if(p==='cow')renderList('cow');
+  else if(p==='horse')renderList('horse');
+  else if(p==='profile')renderProfile();
+  else refreshDash();
+}
+
+// ─── DASHBOARD ───────────────────────────────────────────
+function refreshDash(){
+  const sp=ld('ps_sheep'),cp=ld('ps_cow'),hp=ld('ps_horse');
+  document.getElementById('ds-sheep').textContent=sp.length;
+  document.getElementById('ds-cow').textContent=cp.length;
+  document.getElementById('ds-horse').textContent=hp.length;
+  const tS=sp.reduce((s,p)=>s+(p.sheep||0)+(p.lamb||0)+(p.goat||0)+(p.kid||0),0);
+  const tC=cp.reduce((s,p)=>s+(p.cows||[]).length,0);
+  const tH=hp.reduce((s,p)=>s+(p.horse||0)+(p.foal||0),0);
+  document.getElementById('ds-total').textContent=tS+tC+tH;
+  const all=[...sp.map(p=>({...p,_t:'sheep'})),...cp.map(p=>({...p,_t:'cow'})),...hp.map(p=>({...p,_t:'horse'}))];
+  all.sort((a,b)=>(b.upd||0)-(a.upd||0));
+  const el=document.getElementById('recent-list');
+  if(!all.length){el.innerHTML=`<div class="empty"><span class="ei">📋</span>Азырынча маалымат жок</div>`;return;}
+  el.innerHTML=all.slice(0,5).map(p=>`
+    <div class="ir" onclick="goPage('${p._t}')">
+      <span class="ir-ico">${p._t==='sheep'?'🐑':p._t==='cow'?'🐄':'🐎'}</span>
+      <div><div class="ir-val">${p.name}</div>
+      <div class="ir-lbl">${p._t==='sheep'?'Жалпы: '+((p.sheep||0)+(p.lamb||0)+(p.goat||0)+(p.kid||0))+' баш':p._t==='cow'?'Уй: '+((p.cows||[]).length)+' баш':'Жалпы: '+((p.horse||0)+(p.foal||0))+' баш'}</div></div>
+      <span style="margin-left:auto;color:var(--muted);">›</span>
+    </div>`).join('');
+}
+
+// ─── RENDER LISTS ────────────────────────────────────────
+const AVC=['#2d6a4f','#1b5e3b','#0d3d23','#3a7d44','#5d4037','#0277bd','#7b1fa2'];
+
+function renderList(type){
+  const persons=ld('ps_'+type);
+  const listEl=document.getElementById(type+'-list');
+  const subEl=document.getElementById(type+'-sub');
+  if(subEl)subEl.textContent=persons.length+' адам каттоодо';
+  if(!persons.length){listEl.innerHTML=`<div class="empty"><span class="ei">${type==='sheep'?'🐑':type==='cow'?'🐄':'🐎'}</span>Адам кошулган жок</div>`;return;}
+  listEl.innerHTML=persons.map((p,i)=>{
+    const col=AVC[i%AVC.length];
+    const ini=p.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    if(type==='sheep')return renderSheepCard(p,i,col,ini);
+    if(type==='cow')return renderCowCard(p,i,col,ini);
+    if(type==='horse')return renderHorseCard(p,i,col,ini);
+    return '';
+  }).join('');
+}
+
+// SHEEP CARD
+function renderSheepCard(p,i,col,ini){
+  const total=(p.sheep||0)+(p.lamb||0)+(p.goat||0)+(p.kid||0);
+  const photos=p.photos||[];
+  const photoHtml=photos.length
+    ?`<div class="pgrid">${photos.slice(0,9).map(ph=>`<div class="pitem" onclick="viewImg('${ph}')"><img src="${ph}" loading="lazy"></div>`).join('')}</div>`
+    :`<div style="font-size:.8rem;color:var(--muted);padding:.3rem 0 .5rem;">Сурот жок</div>`;
+  const logs=p.logs||[];
+  const logsHtml=logs.length?`
+    <div style="margin-top:.6rem;">
+      <div style="font-size:.75rem;font-weight:600;color:var(--sub);margin-bottom:.3rem;">📋 Алып кеткендер / Сойулгандар тарыхы:</div>
+      ${logs.slice(-5).reverse().map(s=>`
+        <div class="log-item">
+          <span class="log-ico">${s.stype==='sell'?'🤝':'🔪'}</span>
+          <div class="log-info"><div class="log-what">${s.desc}</div><div class="log-when">${s.date}</div></div>
+          ${s.img?`<img class="log-img" src="${s.img}" onclick="viewImg('${s.img}')">`:``}
+        </div>`).join('')}
+    </div>`:'';
+  return `<div class="pc ani" style="animation-delay:${i*.04}s">
+    <div class="pc-hdr" onclick="toggleBody('sb-${p.id}')">
+      <div class="pc-av" style="background:${col}20;color:${col};">${ini}</div>
+      <div class="pc-info">
+        <div class="pc-name">${p.name}</div>
+        <div class="pc-meta">${p.phone||'📞 —'} • Жалпы: <strong>${total} баш</strong></div>
+      </div>
+      <div class="pc-acts" onclick="event.stopPropagation()">
+        <button class="ib e" onclick="openEditPerson('sheep','${p.id}')">✏️</button>
+        <button class="ib d" onclick="askDel('sheep','${p.id}')">🗑️</button>
+      </div>
+    </div>
+    <div class="pc-body" id="sb-${p.id}">
+      <div class="total-pill">📊 Жалпы: ${total} баш (Кой+Козу+Эчки+Улак)</div>
+      <div class="asgrid">
+        <div class="as"><div class="as-lbl">🐑 Кой</div><div class="as-val">${p.sheep||0}</div></div>
+        <div class="as"><div class="as-lbl">🐣 Козу</div><div class="as-val">${p.lamb||0}</div></div>
+        <div class="as"><div class="as-lbl">🐐 Эчки</div><div class="as-val">${p.goat||0}</div></div>
+        <div class="as"><div class="as-lbl">🐏 Улак</div><div class="as-val">${p.kid||0}</div></div>
+      </div>
+      <div style="font-size:.75rem;font-weight:600;color:var(--sub);margin-bottom:.3rem;">📸 Суроттор</div>
+      ${photoHtml}
+      ${logsHtml}
+      ${p.note?`<div style="margin-top:.5rem;padding:.5rem;background:var(--a50);border-radius:var(--r);font-size:.8rem;color:#6b4c00;">📝 ${p.note}</div>`:''}
+      <button class="btn-sell" onclick="openSell('sheep','${p.id}',event)">✏️ Алып кетти / Сойду — жазуу</button>
+    </div>
+  </div>`;
+}
+
+// COW CARD
+function renderCowCard(p,i,col,ini){
+  const cows=p.cows||[];
+  return `<div class="pc ani" style="animation-delay:${i*.04}s">
+    <div class="pc-hdr" onclick="toggleBody('cb-${p.id}')">
+      <div class="pc-av" style="background:${col}20;color:${col};">${ini}</div>
+      <div class="pc-info">
+        <div class="pc-name">${p.name}</div>
+        <div class="pc-meta">${p.phone||'📞 —'} • Уй: <strong>${cows.length} баш</strong></div>
+      </div>
+      <div class="pc-acts" onclick="event.stopPropagation()">
+        <button class="ib e" onclick="openEditCowPerson('${p.id}')">✏️</button>
+        <button class="ib d" onclick="askDel('cow','${p.id}')">🗑️</button>
+      </div>
+    </div>
+    <div class="pc-body" id="cb-${p.id}">
+      <div class="total-pill">🐄 Жалпы уй: ${cows.length} баш</div>
+      <div>${cows.map((c,ci)=>renderCowAnketa(p.id,c,ci)).join('')}</div>
+      <button class="btn-add-cow" onclick="openAddCow('${p.id}')">＋ Жаңы уй кошуу</button>
+      ${p.note?`<div style="margin-top:.5rem;padding:.5rem;background:var(--a50);border-radius:var(--r);font-size:.8rem;color:#6b4c00;">📝 ${p.note}</div>`:''}
+    </div>
+  </div>`;
+}
+
+function renderCowAnketa(pid,c,ci){
+  const dot=c.colorHex?`background:${c.colorHex};`:'background:#ccc;';
+  function mkPhotoRow(photos,slot){
+    const imgs=photos.map((ph,pi)=>`
+      <div class="ca-pbox" onclick="viewImg('${ph}')">
+        <img src="${ph}" style="width:100%;height:100%;object-fit:cover;">
+        <button class="pdel" style="opacity:1;" onclick="delCowPhoto(event,'${pid}','${c.id}','${slot}',${pi})">✕</button>
+      </div>`).join('');
+    const addBtn=photos.length<4?`<div class="ca-pbox-add" onclick="phiForCow('${pid}','${c.id}','${slot}')">📷<br><span style="font-size:.65rem;">Кошуу</span></div>`:'';
+    return `<div class="photo-row">${imgs}${addBtn}</div>`;
+  }
+  return `<div class="ca">
+    <div class="ca-hdr" onclick="toggleBody('ca-${pid}-${c.id}')">
+      <div class="ca-num">${ci+1}</div>
+      <div class="ca-name">${c.name||'Уй #'+(ci+1)}</div>
+      <div class="ca-dot" style="${dot}" title="${c.color||''}"></div>
+    </div>
+    <div class="ca-body" id="ca-${pid}-${c.id}">
+      <div class="ca-sec-ttl">📋 Негизги маалымат</div>
+      <div class="ca-field">🎨 Түс: <strong>${c.color||'—'}</strong></div>
+      <div class="ca-field">🏷 Бирка №: <strong>${c.tag||'—'}</strong></div>
+      ${c.note?`<div class="ca-field" style="margin-top:4px;color:var(--sub);">📝 ${c.note}</div>`:''}
+      <div class="ca-sec-ttl">📸 Уйдун суроту</div>
+      ${mkPhotoRow(c.photos||[],  'main')}
+      <div class="ca-sec-ttl">👂 Кулак эндинин суроту</div>
+      ${mkPhotoRow(c.earPhotos||[],'ear')}
+      <div class="ca-sec-ttl">🔥 Тамганын суроту</div>
+      ${mkPhotoRow(c.brandPhotos||[],'brand')}
+      <button class="ca-edit-btn" onclick="openEditCow('${pid}','${c.id}')">✏️ Өзгөртүү</button>
+      <button class="ca-del-btn" onclick="askDelCow('${pid}','${c.id}')">🗑️ Уйду өчүрүү</button>
+    </div>
+  </div>`;
+}
+
+// HORSE CARD
+function renderHorseCard(p,i,col,ini){
+  const total=(p.horse||0)+(p.foal||0);
+  const logs=p.logs||[];
+  const logsHtml=logs.length?`
+    <div style="margin-top:.6rem;">
+      <div style="font-size:.75rem;font-weight:600;color:var(--sub);margin-bottom:.3rem;">📋 Алып кеткендер тарыхы:</div>
+      ${logs.slice(-5).reverse().map(s=>`
+        <div class="log-item">
+          <span class="log-ico">${s.stype==='sell'?'🤝':'🔪'}</span>
+          <div class="log-info"><div class="log-what">${s.desc}</div><div class="log-when">${s.date}</div></div>
+          ${s.img?`<img class="log-img" src="${s.img}" onclick="viewImg('${s.img}')">`:``}
+        </div>`).join('')}
+    </div>`:'';
+  return `<div class="pc ani" style="animation-delay:${i*.04}s">
+    <div class="pc-hdr" onclick="toggleBody('hb-${p.id}')">
+      <div class="pc-av" style="background:${col}20;color:${col};">${ini}</div>
+      <div class="pc-info">
+        <div class="pc-name">${p.name}</div>
+        <div class="pc-meta">${p.phone||'📞 —'} • Жалпы: <strong>${total} баш</strong></div>
+      </div>
+      <div class="pc-acts" onclick="event.stopPropagation()">
+        <button class="ib e" onclick="openEditPerson('horse','${p.id}')">✏️</button>
+        <button class="ib d" onclick="askDel('horse','${p.id}')">🗑️</button>
+      </div>
+    </div>
+    <div class="pc-body" id="hb-${p.id}">
+      <div class="total-pill">📊 Жалпы: ${total} баш (Жылкы+Кулун)</div>
+      <div class="asgrid">
+        <div class="as"><div class="as-lbl">🐎 Жылкы</div><div class="as-val">${p.horse||0}</div></div>
+        <div class="as"><div class="as-lbl">🐴 Кулун</div><div class="as-val">${p.foal||0}</div></div>
+      </div>
+      ${logsHtml}
+      ${p.note?`<div style="margin-top:.5rem;padding:.5rem;background:var(--a50);border-radius:var(--r);font-size:.8rem;color:#6b4c00;">📝 ${p.note}</div>`:''}
+      <button class="btn-sell" onclick="openSell('horse','${p.id}',event)">✏️ Алып кетти / Сойду — жазуу</button>
+    </div>
+  </div>`;
+}
+
+function toggleBody(id){const el=document.getElementById(id);if(el)el.classList.toggle('open');}
+
+// ─── LIVE CALC ───────────────────────────────────────────
+function calcSheepT(){
+  const v=id=>parseInt(document.getElementById(id).value)||0;
+  document.getElementById('sheep-total-lbl').textContent=(v('mp-sheep')+v('mp-lamb')+v('mp-goat')+v('mp-kid'))+' баш';
+}
+function calcHorseT(){
+  const v=id=>parseInt(document.getElementById(id).value)||0;
+  document.getElementById('horse-total-lbl').textContent=(v('mp-horse')+v('mp-foal'))+' баш';
+}
+let sellType=null;
+function calcSellT(){
+  let t=0;
+  if(sellType==='sheep') t=(parseInt(document.getElementById('sl-sheep').value)||0)+(parseInt(document.getElementById('sl-lamb').value)||0)+(parseInt(document.getElementById('sl-goat').value)||0)+(parseInt(document.getElementById('sl-kid').value)||0);
+  else if(sellType==='horse') t=(parseInt(document.getElementById('sl-horse').value)||0)+(parseInt(document.getElementById('sl-foal').value)||0);
+  document.getElementById('sell-total-lbl').textContent=t+' баш';
+}
+
+// ─── ADD/EDIT PERSON (sheep/horse) ───────────────────────
+let editType=null,editId=null,tempSheepPhotos=[];
+
+function openAddPerson(type){
+  if(type==='cow'){openAddCowPerson();return;}
+  editType=type;editId=null;tempSheepPhotos=[];
+  document.getElementById('mo-person-ttl').textContent=(type==='sheep'?'🐑':'🐎')+' Адам кошуу';
+  document.getElementById('mp-name').value='';document.getElementById('mp-phone').value='';document.getElementById('mp-note').value='';
+  document.getElementById('mpf-sheep').style.display=type==='sheep'?'block':'none';
+  document.getElementById('mpf-horse').style.display=type==='horse'?'block':'none';
+  ['mp-sheep','mp-lamb','mp-goat','mp-kid','mp-horse','mp-foal'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
+  updateSheepPgrid();calcSheepT();calcHorseT();
+  openMo('mo-person');
+}
+function openEditPerson(type,id){
+  if(type==='cow'){openEditCowPerson(id);return;}
+  const p=ld('ps_'+type).find(x=>x.id==id);if(!p)return;
+  editType=type;editId=id;tempSheepPhotos=[...(p.photos||[])];
+  document.getElementById('mo-person-ttl').textContent='✏️ Маалыматты өзгөртүү';
+  document.getElementById('mp-name').value=p.name||'';document.getElementById('mp-phone').value=p.phone||'';document.getElementById('mp-note').value=p.note||'';
+  document.getElementById('mpf-sheep').style.display=type==='sheep'?'block':'none';
+  document.getElementById('mpf-horse').style.display=type==='horse'?'block':'none';
+  if(type==='sheep'){
+    document.getElementById('mp-sheep').value=p.sheep||0;document.getElementById('mp-lamb').value=p.lamb||0;
+    document.getElementById('mp-goat').value=p.goat||0;document.getElementById('mp-kid').value=p.kid||0;
+    setTimeout(calcSheepT,30);
+  }else{
+    document.getElementById('mp-horse').value=p.horse||0;document.getElementById('mp-foal').value=p.foal||0;
+    setTimeout(calcHorseT,30);
+  }
+  updateSheepPgrid();openMo('mo-person');
+}
+function savePerson(){
+  const name=document.getElementById('mp-name').value.trim();
+  if(!name){showToast('⚠ Атын киргизиңиз');return;}
+  const persons=ld('ps_'+editType);
+  const p={id:editId||Date.now(),name,phone:document.getElementById('mp-phone').value.trim(),note:document.getElementById('mp-note').value.trim(),upd:Date.now()};
+  if(editType==='sheep'){
+    p.sheep=parseInt(document.getElementById('mp-sheep').value)||0;
+    p.lamb=parseInt(document.getElementById('mp-lamb').value)||0;
+    p.goat=parseInt(document.getElementById('mp-goat').value)||0;
+    p.kid=parseInt(document.getElementById('mp-kid').value)||0;
+    p.photos=[...tempSheepPhotos];
+    if(editId){const x=persons.findIndex(x=>x.id==editId);if(x>-1){p.logs=persons[x].logs;persons[x]=p;}}else persons.push(p);
+  }else{
+    p.horse=parseInt(document.getElementById('mp-horse').value)||0;
+    p.foal=parseInt(document.getElementById('mp-foal').value)||0;
+    if(editId){const x=persons.findIndex(x=>x.id==editId);if(x>-1){p.logs=persons[x].logs;persons[x]=p;}}else persons.push(p);
+  }
+  sd('ps_'+editType,persons);closeMo('mo-person');renderList(editType);refreshDash();showToast(editId?'✅ Жаңыланды':'✅ Кошулду');
+}
+
+// ─── COW PERSON ──────────────────────────────────────────
+let editCowPersonId=null;
+function openAddCowPerson(){
+  editCowPersonId=null;
+  document.getElementById('mo-cperson-ttl').textContent='🐄 Адам кошуу (Уй)';
+  document.getElementById('mcp-name').value='';document.getElementById('mcp-phone').value='';document.getElementById('mcp-note').value='';
+  openMo('mo-cperson');
+}
+function openEditCowPerson(id){
+  const p=ld('ps_cow').find(x=>x.id==id);if(!p)return;
+  editCowPersonId=id;
+  document.getElementById('mo-cperson-ttl').textContent='✏️ Өзгөртүү';
+  document.getElementById('mcp-name').value=p.name||'';document.getElementById('mcp-phone').value=p.phone||'';document.getElementById('mcp-note').value=p.note||'';
+  openMo('mo-cperson');
+}
+function saveCowPerson(){
+  const name=document.getElementById('mcp-name').value.trim();
+  if(!name){showToast('⚠ Атын киргизиңиз');return;}
+  const persons=ld('ps_cow');
+  if(editCowPersonId){
+    const idx=persons.findIndex(x=>x.id==editCowPersonId);
+    if(idx>-1){persons[idx].name=name;persons[idx].phone=document.getElementById('mcp-phone').value.trim();persons[idx].note=document.getElementById('mcp-note').value.trim();persons[idx].upd=Date.now();}
+  }else{
+    persons.push({id:Date.now(),name,phone:document.getElementById('mcp-phone').value.trim(),note:document.getElementById('mcp-note').value.trim(),cows:[],upd:Date.now()});
+  }
+  sd('ps_cow',persons);closeMo('mo-cperson');renderList('cow');refreshDash();showToast(editCowPersonId?'✅ Жаңыланды':'✅ Кошулду');
+}
+
+// ─── COW ANKETA ──────────────────────────────────────────
+let editCowPid=null,editCowId=null;
+let tmpCow={main:[],ear:[],brand:[]};
+
+const COW_COLORS=[
+  {n:'Ала',h:'#f5f5f5'},{n:'Кара',h:'#212121'},{n:'Кызыл',h:'#b71c1c'},
+  {n:'Сары',h:'#f9a825'},{n:'Боз',h:'#90a4ae'},{n:'Кара-ала',h:'#37474f'},
+  {n:'Кызыл-ала',h:'#d84315'},{n:'Боз-ала',h:'#78909c'},{n:'Жашыл-ала',h:'#388e3c'},
+];
+
+function initColors(){
+  document.getElementById('color-opts').innerHTML=COW_COLORS.map(c=>`<div class="col-opt" style="background:${c.h};border:2px solid rgba(0,0,0,.12);" title="${c.n}" onclick="pickColor('${c.n}','${c.h}',this)"></div>`).join('');
+}
+function pickColor(n,h,el){
+  document.querySelectorAll('.col-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');
+  const inp=document.getElementById('mc-color');inp.value=n;inp.dataset.hex=h;
+}
+function syncColor(){
+  const v=document.getElementById('mc-color').value.trim();
+  document.querySelectorAll('.col-opt').forEach(el=>el.classList.toggle('sel',el.title===v));
+}
+
+function openAddCow(pid){
+  editCowPid=pid;editCowId=null;tmpCow={main:[],ear:[],brand:[]};
+  document.getElementById('mo-cow-ttl').textContent='🐄 Жаңы уй кошуу';
+  document.getElementById('mc-name').value='';document.getElementById('mc-color').value='';document.getElementById('mc-color').dataset.hex='';document.getElementById('mc-tag').value='';document.getElementById('mc-note').value='';
+  document.querySelectorAll('.col-opt').forEach(x=>x.classList.remove('sel'));
+  updateCowModal();openMo('mo-cow');
+}
+function openEditCow(pid,cid){
+  editCowPid=pid;editCowId=cid;
+  const persons=ld('ps_cow');
+  const person=persons.find(x=>x.id==pid);if(!person)return;
+  const cow=(person.cows||[]).find(c=>c.id==cid);if(!cow)return;
+  tmpCow={main:[...(cow.photos||[])],ear:[...(cow.earPhotos||[])],brand:[...(cow.brandPhotos||[])]};
+  document.getElementById('mo-cow-ttl').textContent='✏️ Уй маалыматын өзгөртүү';
+  document.getElementById('mc-name').value=cow.name||'';
+  document.getElementById('mc-color').value=cow.color||'';document.getElementById('mc-color').dataset.hex=cow.colorHex||'';
+  document.getElementById('mc-tag').value=cow.tag||'';document.getElementById('mc-note').value=cow.note||'';
+  document.querySelectorAll('.col-opt').forEach(el=>el.classList.toggle('sel',el.title===cow.color));
+  updateCowModal();openMo('mo-cow');
+}
+function updateCowModal(){
+  ['main','ear','brand'].forEach(slot=>{
+    const gridId=slot==='main'?'cow-main-grid':slot==='ear'?'cow-ear-grid':'cow-brand-grid';
+    const grid=document.getElementById(gridId);if(!grid)return;
+    const photos=tmpCow[slot];
+    const imgs=photos.map((ph,pi)=>`
+      <div class="ca-pbox" onclick="viewImg('${ph}')">
+        <img src="${ph}" style="width:100%;height:100%;object-fit:cover;">
+        <button class="pdel" style="opacity:1;" onclick="delTmpCow('${slot}',${pi},event)">✕</button>
+      </div>`).join('');
+    const addBtn=photos.length<4?`<div class="ca-pbox-add" onclick="phiForCowTemp('${slot}')">📷<br><span style="font-size:.65rem;">Кошуу</span></div>`:'';
+    grid.innerHTML=imgs+addBtn;
+  });
+}
+function delTmpCow(slot,idx,e){e.stopPropagation();tmpCow[slot].splice(idx,1);updateCowModal();}
+function delCowPhoto(e,pid,cid,slot,idx){
+  e.stopPropagation();
+  const persons=ld('ps_cow');
+  const pi=persons.findIndex(x=>x.id==pid);if(pi<0)return;
+  const ci=(persons[pi].cows||[]).findIndex(c=>c.id==cid);if(ci<0)return;
+  const key=slot==='main'?'photos':slot==='ear'?'earPhotos':'brandPhotos';
+  persons[pi].cows[ci][key].splice(idx,1);
+  sd('ps_cow',persons);renderList('cow');showToast('Сурот өчүрүлдү');
+}
+function saveCowAnketa(){
+  const name=document.getElementById('mc-name').value.trim();
+  const colorTxt=document.getElementById('mc-color').value.trim();
+  const colorHex=document.getElementById('mc-color').dataset.hex||'';
+  const tag=document.getElementById('mc-tag').value.trim();
+  const note=document.getElementById('mc-note').value.trim();
+  const persons=ld('ps_cow');
+  const pi=persons.findIndex(x=>x.id==editCowPid);if(pi<0)return;
+  if(!persons[pi].cows)persons[pi].cows=[];
+  const cowData={id:editCowId||Date.now(),name:name||'Аты жок',color:colorTxt,colorHex,tag,note,photos:[...tmpCow.main],earPhotos:[...tmpCow.ear],brandPhotos:[...tmpCow.brand]};
+  if(editCowId){const ci=persons[pi].cows.findIndex(c=>c.id==editCowId);if(ci>-1)persons[pi].cows[ci]=cowData;}
+  else persons[pi].cows.push(cowData);
+  persons[pi].upd=Date.now();
+  sd('ps_cow',persons);closeMo('mo-cow');renderList('cow');refreshDash();showToast(editCowId?'✅ Уй жаңыланды':'✅ Уй кошулду');
+}
+
+// Delete cow
+let coCallback=null;
+function askDelCow(pid,cid){
+  document.getElementById('co-txt').textContent='Бул уйдун бардык маалыматы өчүрүлөт!';
+  coCallback=()=>{
+    const persons=ld('ps_cow');const pi=persons.findIndex(x=>x.id==pid);
+    if(pi>-1){persons[pi].cows=(persons[pi].cows||[]).filter(c=>c.id!=cid);sd('ps_cow',persons);}
+    renderList('cow');refreshDash();showToast('🗑️ Уй өчүрүлдү');
+  };
+  openCo();
+}
+
+// ─── SELL / TAKEN LOG ────────────────────────────────────
+let sellPersonId=null,sellLogImgs=[];
+
+function openSell(type,personId,e){
+  if(e)e.stopPropagation();
+  sellType=type;sellPersonId=personId;sellLogImgs=[];
+  const p=ld('ps_'+type).find(x=>x.id==personId);if(!p)return;
+  document.getElementById('mo-sell-ttl').textContent=`✏️ ${p.name} — Алып кетти / Сойду`;
+  document.getElementById('sell-sheep-sec').style.display=type==='sheep'?'block':'none';
+  document.getElementById('sell-horse-sec').style.display=type==='horse'?'block':'none';
+  ['sl-sheep','sl-lamb','sl-goat','sl-kid','sl-horse','sl-foal'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=0;});
+  document.getElementById('sl-note').value='';
+  document.getElementById('sell-total-lbl').textContent='0 баш';
+  document.getElementById('sell-imgs').innerHTML=`<button class="nip-add" onclick="phiForSell()">📷</button>`;
+  openMo('mo-sell');
+}
+function doSell(){
+  if(!sellType||!sellPersonId)return;
+  const persons=ld('ps_'+sellType);
+  const pi=persons.findIndex(x=>x.id==sellPersonId);if(pi<0)return;
+  const p=persons[pi];
+  const note=document.getElementById('sl-note').value.trim();
+  const img=sellLogImgs[0]||null;
+  const now=new Date();
+  const dateStr=now.toLocaleDateString('ky-KG')+' '+now.toLocaleTimeString('ky-KG',{hour:'2-digit',minute:'2-digit'});
+  let desc=[],err=false;
+  if(sellType==='sheep'){
+    const ss=parseInt(document.getElementById('sl-sheep').value)||0;
+    const sl=parseInt(document.getElementById('sl-lamb').value)||0;
+    const sg=parseInt(document.getElementById('sl-goat').value)||0;
+    const sk=parseInt(document.getElementById('sl-kid').value)||0;
+    if(ss>(p.sheep||0)){showToast('⚠ Коюнда '+( p.sheep||0)+' гана бар!');err=true;}
+    if(sl>(p.lamb||0)){showToast('⚠ Козусунда '+(p.lamb||0)+' гана бар!');err=true;}
+    if(sg>(p.goat||0)){showToast('⚠ Эчкисинде '+(p.goat||0)+' гана бар!');err=true;}
+    if(sk>(p.kid||0)){showToast('⚠ Улагында '+(p.kid||0)+' гана бар!');err=true;}
+    if(err)return;
+    if(ss){p.sheep=(p.sheep||0)-ss;desc.push('🐑 Кой -'+ss);}
+    if(sl){p.lamb=(p.lamb||0)-sl;desc.push('🐣 Козу -'+sl);}
+    if(sg){p.goat=(p.goat||0)-sg;desc.push('🐐 Эчки -'+sg);}
+    if(sk){p.kid=(p.kid||0)-sk;desc.push('🐏 Улак -'+sk);}
+  }else{
+    const sh=parseInt(document.getElementById('sl-horse').value)||0;
+    const sf=parseInt(document.getElementById('sl-foal').value)||0;
+    if(sh>(p.horse||0)){showToast('⚠ Жылкысында '+(p.horse||0)+' гана бар!');err=true;}
+    if(sf>(p.foal||0)){showToast('⚠ Кулунунда '+(p.foal||0)+' гана бар!');err=true;}
+    if(err)return;
+    if(sh){p.horse=(p.horse||0)-sh;desc.push('🐎 Жылкы -'+sh);}
+    if(sf){p.foal=(p.foal||0)-sf;desc.push('🐴 Кулун -'+sf);}
+  }
+  if(!desc.length){showToast('⚠ Санын киргизиңиз');return;}
+  if(!p.logs)p.logs=[];
+  p.logs.push({stype:'sell',desc:desc.join(', ')+(note?' | '+note:''),date:dateStr,img});
+  if(p.logs.length>50)p.logs=p.logs.slice(-50);
+  p.upd=Date.now();persons[pi]=p;
+  sd('ps_'+sellType,persons);closeMo('mo-sell');renderList(sellType);refreshDash();showToast('✅ Жазылды: '+desc.join(', '));
+}
+
+// ─── SHEEP PHOTOS ────────────────────────────────────────
+function updateSheepPgrid(){
+  const grid=document.getElementById('sheep-pgrid');if(!grid)return;
+  const addBtn=`<button class="padd" onclick="phiForSheep()"><span class="pie">📷</span><span>Кошуу</span></button>`;
+  const imgs=tempSheepPhotos.map((ph,i)=>`<div class="pitem"><img src="${ph}"><button class="pdel" onclick="delSheepPhoto(${i},event)">✕</button></div>`).join('');
+  grid.innerHTML=imgs+(tempSheepPhotos.length<9?addBtn:'');
+}
+function delSheepPhoto(i,e){e.stopPropagation();tempSheepPhotos.splice(i,1);updateSheepPgrid();}
+
+// ─── PHOTO INPUT ROUTING ─────────────────────────────────
+let phiTarget=null;
+
+function phiForSheep(){phiTarget={t:'sheep'};openMo('mo-phi');}
+function phiForCowTemp(slot){phiTarget={t:'cowtemp',slot};openMo('mo-phi');}
+function phiForCow(pid,cid,slot){phiTarget={t:'cow',pid,cid,slot};openMo('mo-phi');}
+function phiForSell(){phiTarget={t:'sell'};openMo('mo-phi');}
+
+function phiTrig(src){
+  closeMo('mo-phi');
+  const el=document.getElementById('phi');
+  if(src==='cam')el.setAttribute('capture','environment');else el.removeAttribute('capture');
+  el.click();
+}
+function phiSelected(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      const MAX=900;let w=img.width,h=img.height;
+      if(w>h&&w>MAX){h=h*MAX/w;w=MAX;}else if(h>MAX){w=w*MAX/h;h=MAX;}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      routePhoto(canvas.toDataURL('image/jpeg',0.72));
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);e.target.value='';
+}
+function routePhoto(data){
+  if(!phiTarget)return;
+  const t=phiTarget.t;
+  if(t==='sheep'){tempSheepPhotos.push(data);updateSheepPgrid();showToast('📷 Сурот кошулду');}
+  else if(t==='cowtemp'){tmpCow[phiTarget.slot].push(data);updateCowModal();showToast('📷 Сурот кошулду');}
+  else if(t==='cow'){
+    const persons=ld('ps_cow');
+    const pi=persons.findIndex(x=>x.id==phiTarget.pid);if(pi<0)return;
+    const ci=(persons[pi].cows||[]).findIndex(c=>c.id==phiTarget.cid);if(ci<0)return;
+    const key=phiTarget.slot==='main'?'photos':phiTarget.slot==='ear'?'earPhotos':'brandPhotos';
+    if(!persons[pi].cows[ci][key])persons[pi].cows[ci][key]=[];
+    persons[pi].cows[ci][key].push(data);
+    sd('ps_cow',persons);renderList('cow');showToast('📷 Сурот кошулду');
+  }else if(t==='sell'){
+    sellLogImgs=[data];
+    document.getElementById('sell-imgs').innerHTML=`<img class="nip" src="${data}" onclick="viewImg('${data}')"><button class="nip-add" onclick="phiForSell()">📷</button>`;
+    showToast('📷 Сурот кошулду');
+  }
+}
+
+// ─── DELETE PERSON ───────────────────────────────────────
+let delType=null,delId=null;
+function askDel(type,id){
+  delType=type;delId=id;
+  const p=ld('ps_'+type).find(x=>x.id==id);
+  document.getElementById('co-txt').textContent=(p?`"${p.name}"`:'Бул адам')+' өчүрүлөт. Ишенесизби?';
+  coCallback=()=>{
+    sd('ps_'+delType,ld('ps_'+delType).filter(x=>x.id!=delId));
+    renderList(delType);refreshDash();showToast('🗑️ Өчүрүлдү');
+  };
+  openCo();
+}
+
+// ─── IMAGE VIEWER ────────────────────────────────────────
+function viewImg(src){document.getElementById('img-view').src=src;openMo('mo-img');}
+
+// ─── PROFILE ─────────────────────────────────────────────
+function renderProfile(){
+  const sp=ld('ps_sheep'),cp=ld('ps_cow'),hp=ld('ps_horse');
+  const tS=sp.reduce((s,p)=>s+(p.sheep||0)+(p.lamb||0)+(p.goat||0)+(p.kid||0),0);
+  const tC=cp.reduce((s,p)=>s+(p.cows||[]).length,0);
+  const tH=hp.reduce((s,p)=>s+(p.horse||0)+(p.foal||0),0);
+  document.getElementById('prof-content').innerHTML=`
+    <div class="prof-card ani"><div class="prof-av">${CU.name[0].toUpperCase()}</div>
+    <div class="prof-name">${CU.name}</div><div class="prof-ph">${CU.phone||'—'}</div></div>
+    <div style="margin-bottom:.85rem;">
+      <div class="sec-ttl" style="margin-bottom:.6rem;">📊 Жалпы статистика</div>
+      <div class="sgrid">
+        <div class="sc sheep"><div class="sc-ico">🐑</div><div class="sc-lbl">Кой/Козу/Эчки/Улак</div><div class="sc-num">${tS}</div><div class="sc-sub">жалпы баш</div></div>
+        <div class="sc cow"><div class="sc-ico">🐄</div><div class="sc-lbl">Уй</div><div class="sc-num">${tC}</div><div class="sc-sub">жалпы баш</div></div>
+        <div class="sc horse"><div class="sc-ico">🐎</div><div class="sc-lbl">Жылкы/Кулун</div><div class="sc-num">${tH}</div><div class="sc-sub">жалпы баш</div></div>
+        <div class="sc total"><div class="sc-ico">👥</div><div class="sc-lbl">Адамдар</div><div class="sc-num">${sp.length+cp.length+hp.length}</div><div class="sc-sub">каттоодо</div></div>
+      </div>
+    </div>
+    <div class="sec-ttl" style="margin-bottom:.6rem;">👤 Аккаунт</div>
+    <div class="ir"><span class="ir-ico">👤</span><div><div class="ir-lbl">Логин</div><div class="ir-val">${CU.username}</div></div></div>
+    <div class="ir"><span class="ir-ico">📅</span><div><div class="ir-lbl">Катталган</div><div class="ir-val">${new Date(CU.created).toLocaleDateString('ky-KG')}</div></div></div>
+    <button class="btn-p" style="background:var(--r600);margin-top:1.25rem;" onclick="doLogout()">🚪 Чыгуу</button>`;
+}
+
+// ─── MODAL HELPERS ───────────────────────────────────────
+function openMo(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden';}
+function closeMo(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';}
+document.querySelectorAll('.mo').forEach(mo=>mo.addEventListener('click',function(e){if(e.target===this)closeMo(this.id);}));
+function openCo(){document.getElementById('co').classList.add('open');}
+function closeCo(){document.getElementById('co').classList.remove('open');}
+function doCo(){closeCo();if(coCallback)coCallback();coCallback=null;}
+document.getElementById('co').addEventListener('click',function(e){if(e.target===this)closeCo();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.mo.open').forEach(m=>closeMo(m.id));closeCo();}});
+document.getElementById('l-p').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('r-p').addEventListener('keydown',e=>{if(e.key==='Enter')doReg();});
+
+// ─── TOAST ───────────────────────────────────────────────
+let tTimer;
+function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(tTimer);tTimer=setTimeout(()=>el.classList.remove('show'),2600);}
+
+// ─── SERVICE WORKER ──────────────────────────────────────
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+
+// ─── INIT ─────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{if(checkSess())startApp();});
+</script>
+</body>
+</html>
