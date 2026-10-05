@@ -26,28 +26,6 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 @keyframes scaleIn{from{transform:scale(0.92);opacity:0}to{transform:scale(1);opacity:1}}
 .ani{animation:fadeIn .3s ease both}
 
-/* AUTH */
-#auth-screen{min-height:100vh;background:linear-gradient(135deg,#052214,#1b5e3b 60%,#2d6a4f);display:flex;align-items:center;justify-content:center;padding:1.5rem;position:relative;overflow:hidden;}
-.ab{position:absolute;border-radius:50%;background:rgba(255,255,255,0.05);animation:float 6s ease-in-out infinite;}
-.ab:nth-child(1){width:300px;height:300px;top:-80px;left:-80px;}
-.ab:nth-child(2){width:200px;height:200px;bottom:-40px;right:-40px;animation-delay:2s;}
-.ab:nth-child(3){width:120px;height:120px;top:40%;left:75%;animation-delay:4s;}
-.auth-card{background:rgba(255,255,255,0.97);border-radius:20px;padding:2.25rem;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;z-index:1;animation:scaleIn .4s ease;}
-.auth-logo{text-align:center;margin-bottom:1.75rem;}
-.auth-logo .ico{font-size:3.5rem;display:block;animation:float 3s ease-in-out infinite;}
-.auth-logo h1{font-size:1.75rem;font-weight:700;color:var(--g700);}
-.auth-logo p{font-size:.85rem;color:var(--sub);margin-top:3px;}
-.tabs{display:flex;background:var(--bg);border-radius:var(--r);padding:4px;margin-bottom:1.25rem;}
-.tab{flex:1;padding:.5rem;border:none;background:none;border-radius:7px;font-size:.875rem;font-weight:500;cursor:pointer;transition:all .2s;color:var(--sub);}
-.tab.active{background:var(--g600);color:#fff;}
-.fg{margin-bottom:.875rem;}
-.lbl{display:block;font-size:.8rem;font-weight:500;color:var(--sub);margin-bottom:.3rem;}
-.inp{width:100%;padding:.7rem .9rem;border:1.5px solid var(--border);border-radius:var(--r);font-size:.9375rem;font-family:inherit;background:#fff;outline:none;color:var(--text);transition:border-color .2s,box-shadow .2s;}
-.inp:focus{border-color:var(--g600);box-shadow:0 0 0 3px rgba(45,106,79,.12);}
-textarea.inp{resize:vertical;}
-.btn-p{width:100%;padding:.85rem;background:var(--g600);color:#fff;border:none;border-radius:var(--r);font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s;margin-top:.25rem;}
-.btn-p:hover{background:var(--g700);}
-.auth-err{background:var(--r50);color:var(--r600);border:1px solid rgba(198,40,40,.2);border-radius:var(--r);padding:.65rem .9rem;font-size:.85rem;margin-top:.6rem;display:none;}
 
 /* APP SHELL */
 #main-app{display:none;min-height:100vh;}
