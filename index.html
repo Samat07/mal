@@ -230,35 +230,7 @@ textarea.inp{resize:vertical;}
 </head>
 <body>
 
-<!-- AUTH -->
-<div id="auth-screen">
-  <div class="ab"></div><div class="ab"></div><div class="ab"></div>
-  <div class="auth-card">
-    <div class="auth-logo">
-      <span class="ico">🐑</span>
-      <h1>МалЭсеп</h1>
-      <p>Малчынын санарип жардамчысы</p>
-    </div>
-    <div class="tabs">
-      <button class="tab active" onclick="authTab('login')">Кирүү</button>
-      <button class="tab" onclick="authTab('reg')">Катталуу</button>
-    </div>
-    <div id="login-f">
-      <div class="fg"><label class="lbl">Логин</label><input class="inp" id="l-u" placeholder="aibek123" autocomplete="username"></div>
-      <div class="fg"><label class="lbl">Пароль</label><input class="inp" type="password" id="l-p" placeholder="Паролуңуз" autocomplete="current-password"></div>
-      <button class="btn-p" onclick="doLogin()">✓ Кирүү</button>
-      <div class="auth-err" id="l-err"></div>
-    </div>
-    <div id="reg-f" style="display:none">
-      <div class="fg"><label class="lbl">Толук аты-жөнү</label><input class="inp" id="r-n" placeholder="Айбек Токтосунов"></div>
-      <div class="fg"><label class="lbl">Логин</label><input class="inp" id="r-u" placeholder="aibek123" autocomplete="username"></div>
-      <div class="fg"><label class="lbl">Телефон</label><input class="inp" type="tel" id="r-ph" placeholder="+996 7XX XXX XXX"></div>
-      <div class="fg"><label class="lbl">Пароль</label><input class="inp" type="password" id="r-p" placeholder="Пароль" autocomplete="new-password"></div>
-      <button class="btn-p" onclick="doReg()">✓ Катталуу</button>
-      <div class="auth-err" id="r-err"></div>
-    </div>
-  </div>
-</div>
+
 
 <!-- MAIN APP -->
 <div id="main-app">
