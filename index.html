@@ -207,9 +207,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 </style>
 </head>
 <body>
-
-
-
+  
 <!-- MAIN APP -->
 <div id="main-app">
   <nav class="topnav">
@@ -436,36 +434,20 @@ function ld(k,d=[]){try{const v=localStorage.getItem(gk(k));return v?JSON.parse(
 function getUsers(){try{return JSON.parse(localStorage.getItem('mu_users')||'[]');}catch(e){return[];}}
 function saveUsers(u){localStorage.setItem('mu_users',JSON.stringify(u));}
 
-// ─── AUTH ────────────────────────────────────────────────
-function authTab(t){
-  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='reg')));
-  document.getElementById('login-f').style.display=t==='login'?'block':'none';
-  document.getElementById('reg-f').style.display=t==='reg'?'block':'none';
+// ─── AUTH (автовход без пароля) ──────────────────────────
+function getUsers(){try{return JSON.parse(localStorage.getItem('mu_users')||'[]');}catch(e){return[];}}
+function saveUsers(u){localStorage.setItem('mu_users',JSON.stringify(u));}
+function doLogout(){localStorage.removeItem('mu_sess');location.reload();}
+function checkSess(){
+  try{
+    const s=localStorage.getItem('mu_sess');
+    if(s){const u=JSON.parse(s);const f=getUsers().find(x=>x.username===u.username);if(f){CU=f;return true;}}
+    // Автовход: берём первого зарегистрированного пользователя
+    const users=getUsers();
+    if(users.length){CU=users[0];localStorage.setItem('mu_sess',JSON.stringify(CU));return true;}
+  }catch(e){}
+  return false;
 }
-function showErr(id,m){const e=document.getElementById(id);e.textContent='⚠ '+m;e.style.display='block';}
-function doLogin(){
-  const u=document.getElementById('l-u').value.trim(),p=document.getElementById('l-p').value;
-  document.getElementById('l-err').style.display='none';
-  if(!u||!p){showErr('l-err','Логин жана пароль киргизиңиз');return;}
-  const user=getUsers().find(x=>x.username===u&&x.password===btoa(p));
-  if(!user){showErr('l-err','Логин же пароль туура эмес');return;}
-  CU=user;localStorage.setItem('mu_sess',JSON.stringify(user));startApp();
-}
-function doReg(){
-  const n=document.getElementById('r-n').value.trim(),u=document.getElementById('r-u').value.trim(),ph=document.getElementById('r-ph').value.trim(),p=document.getElementById('r-p').value;
-  document.getElementById('r-err').style.display='none';
-  if(!n||!u||!p){showErr('r-err','Бардык талааларды толтуруңуз');return;}
-  if(u.length<3){showErr('r-err','Логин кеминде 3 символ');return;}
-  if(p.length<4){showErr('r-err','Пароль кеминде 4 символ');return;}
-  const users=getUsers();
-  if(users.find(x=>x.username===u)){showErr('r-err','Бул логин бар, башкасын тандаңыз');return;}
-  const usr={id:Date.now(),name:n,username:u,phone:ph,password:btoa(p),created:new Date().toISOString()};
-  users.push(usr);saveUsers(users);
-  CU=usr;localStorage.setItem('mu_sess',JSON.stringify(usr));startApp();
-}
-function doLogout(){CU=null;localStorage.removeItem('mu_sess');document.getElementById('main-app').style.display='none';document.getElementById('auth-screen').style.display='flex';}
-function checkSess(){try{const s=localStorage.getItem('mu_sess');if(!s)return false;const u=JSON.parse(s);const f=getUsers().find(x=>x.username===u.username);if(f){CU=f;return true;}}catch(e){}return false;}
-
 // ─── APP START ───────────────────────────────────────────
 function startApp(){
   document.getElementById('auth-screen').style.display='none';
