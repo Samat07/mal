@@ -450,7 +450,6 @@ function checkSess(){
 }
 // ─── APP START ───────────────────────────────────────────
 function startApp(){
-  document.getElementById('auth-screen').style.display='none';
   document.getElementById('main-app').style.display='block';
   document.getElementById('nav-av').textContent=CU.name[0].toUpperCase();
   document.getElementById('nav-un').textContent=CU.name.split(' ')[0];
@@ -1024,8 +1023,6 @@ function closeCo(){document.getElementById('co').classList.remove('open');}
 function doCo(){closeCo();if(coCallback)coCallback();coCallback=null;}
 document.getElementById('co').addEventListener('click',function(e){if(e.target===this)closeCo();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelectorAll('.mo.open').forEach(m=>closeMo(m.id));closeCo();}});
-document.getElementById('l-p').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-document.getElementById('r-p').addEventListener('keydown',e=>{if(e.key==='Enter')doReg();});
 
 // ─── TOAST ───────────────────────────────────────────────
 let tTimer;
