@@ -442,11 +442,62 @@ function checkSess(){
   try{
     const s=localStorage.getItem('mu_sess');
     if(s){const u=JSON.parse(s);const f=getUsers().find(x=>x.username===u.username);if(f){CU=f;return true;}}
-    // Автовход: берём первого зарегистрированного пользователя
-    const users=getUsers();
-    if(users.length){CU=users[0];localStorage.setItem('mu_sess',JSON.stringify(CU));return true;}
+
+    // Собираем все логины, у которых есть данные
+    const mKeys=Object.keys(localStorage).filter(k=>k.startsWith('m_'));
+    const logins=[...new Set(mKeys.map(k=>k.split('_')[1]))];
+
+    if(logins.length===1){
+      // Только один логин — входим сразу
+      return autoLogin(logins[0]);
+    }
+    if(logins.length>1){
+      // Несколько логинов — показываем выбор
+      showLoginPicker(logins);
+      return false; // ждём, пока пользователь выберет
+    }
+
+    // Совсем пусто — создаём гостя
+    let users=getUsers();
+    if(!users.length){
+      users=[{id:Date.now(),name:'Малчы',username:'guest',phone:'',password:'',created:new Date().toISOString()}];
+      saveUsers(users);
+    }
+    CU=users[0];localStorage.setItem('mu_sess',JSON.stringify(CU));return true;
   }catch(e){}
   return false;
+}
+
+function autoLogin(login){
+  let users=getUsers();
+  let u=users.find(x=>x.username===login);
+  if(!u){u={id:Date.now(),name:login,username:login,phone:'',password:'',created:new Date().toISOString()};users.push(u);saveUsers(users);}
+  CU=u;localStorage.setItem('mu_sess',JSON.stringify(u));return true;
+}
+
+// Экран выбора логина с данными
+function showLoginPicker(logins){
+  const pick=document.createElement('div');
+  pick.id='login-picker';
+  pick.style.cssText='position:fixed;inset:0;background:#f1f8f4;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;font-family:sans-serif;';
+  let html='<div style="background:#fff;border-radius:16px;padding:1.5rem;max-width:380px;width:100%;box-shadow:0 4px 16px rgba(0,0,0,.1);">';
+  html+='<div style="text-align:center;font-size:2rem;margin-bottom:.4rem;">🐑</div>';
+  html+='<div style="text-align:center;font-weight:700;font-size:1.1rem;margin-bottom:1rem;">Маалыматы бар аккаунттар</div>';
+  logins.forEach(l=>{
+    const count=Object.keys(localStorage).filter(k=>k.startsWith('m_'+l+'_ps_')&&k.endsWith('_sheep')).length
+      +Object.keys(localStorage).filter(k=>k.startsWith('m_'+l+'_ps_')&&k.endsWith('_cow')).length
+      +Object.keys(localStorage).filter(k=>k.startsWith('m_'+l+'_ps_')&&k.endsWith('_horse')).length;
+    html+='<button onclick="pickLogin(\''+l+'\')" style="width:100%;padding:.8rem;margin-bottom:.5rem;background:#e8f5e9;border:2px solid #66bb6a;border-radius:12px;font-size:.95rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">';
+    html+='<span>👤 '+l+'</span><span style="font-size:.75rem;color:#4a6352;">'+count+' жазуу</span></button>';
+  });
+  html+='</div>';
+  pick.innerHTML=html;
+  document.body.appendChild(pick);
+}
+
+function pickLogin(login){
+  document.getElementById('login-picker').remove();
+  if(autoLogin(login))startApp();
 }
 // ─── APP START ───────────────────────────────────────────
 function startApp(){
