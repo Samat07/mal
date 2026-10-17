@@ -1062,7 +1062,38 @@ function renderProfile(){
     <div class="sec-ttl" style="margin-bottom:.6rem;">👤 Аккаунт</div>
     <div class="ir"><span class="ir-ico">👤</span><div><div class="ir-lbl">Логин</div><div class="ir-val">${CU.username}</div></div></div>
     <div class="ir"><span class="ir-ico">📅</span><div><div class="ir-lbl">Катталган</div><div class="ir-val">${new Date(CU.created).toLocaleDateString('ky-KG')}</div></div></div>
+    <div style="margin-top:.6rem;">
+  <div class="sec-ttl" style="margin-bottom:.5rem;">💾 Резерв (маалыматты сактоо)</div>
+  <button class="btn-p" style="background:var(--g600);margin-bottom:.5rem;" onclick="doExportBackup()">💾 БААРДЫГЫН САКТОО</button>
+  <button class="btn-p" style="background:var(--a400);" onclick="document.getElementById('imp-bk').click()">📂 ФАЙЛДЫ КАЙТАРУУ</button>
+  <input type="file" id="imp-bk" accept=".json" style="display:none" onchange="doImportBackup(event)">
+</div>
     <button class="btn-p" style="background:var(--r600);margin-top:1.25rem;" onclick="doLogout()">🚪 Чыгуу</button>`;
+}
+  // ─── BACKUP ─────────────────────────────────────────────
+function doExportBackup(){
+  const out={};
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);
+    if(k.startsWith('m_')||k==='mu_users')out[k]=localStorage.getItem(k);}
+  const n=Object.keys(out).length;
+  if(!n){showToast('⚠ Маалымат табылган жок');return;}
+  const blob=new Blob([JSON.stringify(out)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='mal-backup-'+Date.now()+'.json';a.click();
+  showToast('✅ Сакталды: '+n+' блок (Downloads)');
+}
+function doImportBackup(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      Object.keys(data).forEach(k=>localStorage.setItem(k,data[k]));
+      showToast('✅ Кайырылды! Перезагрузка...');
+      setTimeout(()=>location.reload(),1500);
+    }catch(err){showToast('⚠ Ката: '+err.message);}
+  };
+  r.readAsText(f);
 }
 
 // ─── MODAL HELPERS ───────────────────────────────────────
