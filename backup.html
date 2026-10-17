@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ky">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>МалЭсеп — Резерв</title></head>
+<body style="font-family:sans-serif;background:#f1f8f4;padding:1rem;max-width:500px;margin:0 auto;">
+<h2 style="text-align:center;">🐑 МалЭсеп — Резерв</h2>
+<p style="text-align:center;color:#4a6352;">Телефондогу бардык маалыматтарды сактоо / кайтаруу</p>
+<button onclick="doExport()" style="width:100%;padding:1rem;background:#2d6a4f;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:600;margin:.5rem 0;">💾 БАРДЫГЫН САКТОО (экспорт)</button>
+<button onclick="document.getElementById('imp').click()" style="width:100%;padding:1rem;background:#ffca28;border:none;border-radius:12px;font-size:1rem;font-weight:600;margin:.5rem 0;">📂 ФАЙЛДЫ КАЙТАРУУ (импорт)</button>
+<input type="file" id="imp" accept=".json" style="display:none" onchange="doImport(event)">
+<pre id="log" style="background:#fff;border:1px solid #ccc;border-radius:10px;padding:.8rem;font-size:.75rem;white-space:pre-wrap;margin-top:1rem;">Бул жерде маалымат көрүнөт...</pre>
+<script>
+function log(t){document.getElementById('log').textContent+=t+'\n';}
+function doExport(){
+  const out={};
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);
+    if(k.startsWith('m_')||k==='mu_users'||k==='mu_sess')out[k]=localStorage.getItem(k);}
+  const n=Object.keys(out).length;
+  if(!n){log('⚠ Маалымат табылган жок!');return;}
+  const blob=new Blob([JSON.stringify(out)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='mal-backup-'+Date.now()+'.json';a.click();
+  log('✅ Сакталды! '+n+' файл (ключ) — Downloads папкасына.');
+}
+function doImport(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      Object.keys(data).forEach(k=>localStorage.setItem(k,data[k]));
+      log('✅ Кайырылды! '+Object.keys(data).length+' ключ. Барактты жаңырт.');
+      setTimeout(()=>location.reload(),1500);
+    }catch(err){log('⚠ Ката: '+err.message);}
+  };
+  r.readAsText(f);
+}
+(function(){
+  let found=0,info='';
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);
+    if(k.startsWith('m_')){found++;info+=k+' ('+Math.round(localStorage.getItem(k).length/1024)+' КБ)\n';}}
+  document.getElementById('log').textContent=found?('Бул телефонда табылды '+found+' маалымат блогу:\n'+info):'⚠ Бул телефонда маалымат (m_...) табылган жок.';
+})();
+</script>
+</body>
+</html>
